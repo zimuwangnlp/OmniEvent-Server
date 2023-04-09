@@ -88,7 +88,7 @@ async def main(item: Input):
             }]
             return results
         instances = prepare_for_eae_from_input([item.text], [item.triggers], [schema])
-        arguments = do_event_argument_extraction(eae_model, eae_tokenizer, instances)
+        arguments = do_event_argument_extraction(eae_model, eae_tokenizer, instances, [schema])
         results = get_eae_result(instances, arguments)
     elif item.task == "Event Extraction":
         events = do_event_detection(ed_model, ed_tokenizer, [item.text], [schema])
@@ -99,7 +99,7 @@ async def main(item: Input):
                 "events": []
             }]
             return results
-        arguments = do_event_argument_extraction(eae_model, eae_tokenizer, instances)
+        arguments = do_event_argument_extraction(eae_model, eae_tokenizer, instances, [schema])
         results = get_eae_result(instances, arguments)
     logger.info(results)
     return results

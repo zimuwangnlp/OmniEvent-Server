@@ -8,6 +8,7 @@ from transformers import MT5ForConditionalGeneration, MT5TokenizerFast
 
 from .input_processor import EDProcessor, EAEProcessor
 from .constraint_decoding import get_constraint_decoder
+from schema_info import schema_labels, schema_roles
 
 
 type_start = "<"
@@ -88,11 +89,17 @@ def do_event_detection(model, tokenizer, texts, schemas):
     pred_triggers = []
     for i, pred in enumerate(decoded_preds):
         pred = clean_str(pred)
-        pred_triggers.extend(extract_argument(pred, i))
+        # Filter the triggers not belong the schema
+        filter_triggers = list()
+        for trigger in extract_argument(pred, i):
+            if trigger[1] in schema_labels[schemas[0]]:
+                filter_triggers.append(trigger)
+        pred_triggers.extend(filter_triggers)
+
     return pred_triggers
 
 
-def do_event_argument_extraction(model, tokenizer, instances):
+def do_event_argument_extraction(model, tokenizer, instances, schemas):
     data_processor = EAEProcessor(tokenizer)
     inputs = data_processor.tokenize(instances)
     decoded_preds = generate(model, tokenizer, inputs)
@@ -103,7 +110,13 @@ def do_event_argument_extraction(model, tokenizer, instances):
     pred_triggers = []
     for i, pred in enumerate(decoded_preds):
         pred = clean_str(pred)
-        pred_triggers.append(extract_argument(pred, i))
+        # Filter the arguments not belong to the schema
+        filter_arguments = list()
+        for argument in extract_argument(pred, i):
+            if argument[1] in schema_roles[schemas[0]]:
+                filter_arguments.append(argument)
+        pred_triggers.append(filter_arguments)
+
     return pred_triggers
 
     
