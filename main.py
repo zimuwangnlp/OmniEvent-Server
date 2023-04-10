@@ -1,7 +1,7 @@
 from asyncio.log import logger
 import os 
 import json
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 from typing import Union, List, Tuple
 from fastapi import FastAPI, Request
